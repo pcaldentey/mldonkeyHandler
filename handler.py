@@ -1,18 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import urllib2
-import urllib
-import cookielib
 import os
 import commands
 import sys
-import re
-import time
 from mldonkey import *
-import datetime
 from ConfigParser import ConfigParser
-from sgmllib import SGMLParser
 
 def main():
     actual_dir = os.path.dirname( __file__ )
@@ -29,7 +22,7 @@ def main():
 
     try :
         donkey = MLDonkey(ml_ip,ml_port, ml_user, ml_pass)
-        donkey.clean_searches()
+       # donkey.clean_searches()
     except:
         print "Connection error with ip:%s port:%s !!!" % (ml_ip, ml_port)
         print "Unexpected error:", sys.exc_info()[0]

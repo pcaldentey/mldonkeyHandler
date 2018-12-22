@@ -5,6 +5,7 @@ import time
 import urllib
 from telnetlib import Telnet
 
+
 class MLDonkey:
     "Inteface to Mldonkey server"
 
@@ -18,9 +19,9 @@ class MLDonkey:
     def _start_session(self):
         try:
             self.session = Telnet(self.ip, self.port, 2)
-            self.session.read_until("MLdonkey command-line",2)
+            self.session.read_until("MLdonkey command-line", 2)
             self._run_command("auth %s %s \n" % (self.user, self.passw))
-        except:
+        except Exception as e:
             raise
 
     def _run_command(self, command):
@@ -34,13 +35,17 @@ class MLDonkey:
         """
         Add a ed2k link to mldonkey server
         """
-        command = "printf \"auth %s %s \\n dllink %s \\n q \\n\" | nc -i1 %s %s" % (self.user, self.passw, urllib.unquote(link), self.ip, self.port)
+        command = "printf \"auth %s %s \\n dllink %s \\n q \\n\" | nc -i1 %s %s" % (self.user,
+                                                                                    self.passw,
+                                                                                    urllib.unquote(link),
+                                                                                    self.ip,
+                                                                                    self.port)
         output = commands.getstatusoutput(command)
-        print output
-        if 'Added link' in  output:
-           return "Link added"
+        print(output)
+        if 'Added link' in output:
+            return "Link added"
         elif 'File is already shared in incoming/files' in output:
-           return "Link is already shared in incoming/files"
+            return "Link is already shared in incoming/files"
         elif 'File is already in download queue of' in output:
             return "File is already in download queue"
         else:
@@ -49,14 +54,15 @@ class MLDonkey:
     def get_searches(self):
         self.session.write("vs \n")
         try:
-            page = self.session.read_until("MLdonkey command-line",1)
-            #[27   ]CONTAINS[Desperate.housewives.8x04.School.of.hard.knocks.HDTV.Xvid.V.O.Subtitulos.Integrados.avi]  -2 (found 1)
-            page = page.replace("\r",'')
+            page = self.session.read_until("MLdonkey command-line", 1)
+            # [27   ]CONTAINS[Desperate.housewives.8x04.School.of.hard.knocks.HDTV.Xvid.V.O.Subtitulos.Integrados.avi]
+            # -2 (found 1)
+            page = page.replace("\r", '')
             regexp = re.compile("\[(\d*)[ ]*\][\(*]*CONTAINS\[(.*?)\].*\(found (\d*)\)")
             result = regexp.findall(page)
 
-        except:
-            print "Unexpected error:", sys.exc_info()[0]
+        except Exception as e:
+            print("Unexpected error: {}".format(sys.exc_info()[0]))
             raise
         return result
 
@@ -81,9 +87,9 @@ class MLDonkey:
             res = 0
             try:
                 page = self._run_command(" vr %d \n" % int(search_index))
-                page = page.replace("\r",'')
-            except:
-                print "Unexpected error:", sys.exc_info()[0]
+                page = page.replace("\r", '')
+            except Exception as e:
+                print("Unexpected error: {}".format(sys.exc_info()[0]))
                 raise
             regexp = re.compile("\[[ ]*(\d*)\].*")
             result = regexp.findall(page)

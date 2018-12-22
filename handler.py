@@ -7,8 +7,9 @@ import sys
 from mldonkey import *
 from ConfigParser import ConfigParser
 
+
 def main():
-    actual_dir = os.path.dirname( __file__ )
+    actual_dir = os.path.dirname(__file__)
     configfile = actual_dir + '/donkeylinkscrawler.ini'
 
     # Get configuration
@@ -20,13 +21,12 @@ def main():
     ml_user = config.get('conf', 'ml_USER').strip()
     ml_pass = config.get('conf', 'ml_PASS').strip()
 
-    try :
-        donkey = MLDonkey(ml_ip,ml_port, ml_user, ml_pass)
-       # donkey.clean_searches()
-    except:
-        print "Connection error with ip:%s port:%s !!!" % (ml_ip, ml_port)
-        print "Unexpected error:", sys.exc_info()[0]
-
+    try:
+        donkey = MLDonkey(ml_ip, ml_port, ml_user, ml_pass)
+        # donkey.clean_searches()
+    except Exception as e:
+        print("Connection error with ip:{} port:{} !!!".format(ml_ip, ml_port))
+        print("Unexpected error: {}".format(sys.exc_info()[0])
     else:
         new_searchwords = ['cachurulo', 'lerele']
         donkey.run_search(new_searchwords)
@@ -35,13 +35,14 @@ def main():
             print search
             res = donkey.download_search(int(search[0]))
             if not res:
-                print "\t\"",search[1],"\" downloaded"
+                print("\t\"{}\" downloaded".format(search[1]))
             else:
-                print "Empty search ",search[1]," ",res
+                print("Empty search {} {}".format(search[1], res))
 
         donkey.clean_searches()
 
     return
+
 
 if __name__ == '__main__':
     main()

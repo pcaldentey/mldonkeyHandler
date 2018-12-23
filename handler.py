@@ -2,9 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 import os
-import commands
 import sys
-from mldonkey import *
+from mldonkey import MLDonkey
 from ConfigParser import ConfigParser
 
 
@@ -26,13 +25,13 @@ def main():
         # donkey.clean_searches()
     except Exception as e:
         print("Connection error with ip:{} port:{} !!!".format(ml_ip, ml_port))
-        print("Unexpected error: {}".format(sys.exc_info()[0])
+        print("Unexpected error: {}".format(sys.exc_info()[0]))
     else:
         new_searchwords = ['cachurulo', 'lerele']
         donkey.run_search(new_searchwords)
         searches = donkey.get_searches()
         for search in searches:
-            print search
+            print(search)
             res = donkey.download_search(int(search[0]))
             if not res:
                 print("\t\"{}\" downloaded".format(search[1]))

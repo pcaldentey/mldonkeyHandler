@@ -25,9 +25,10 @@ class MLDonkey:
             self._start_session()
         except Exception as e:
             self.quit()
-            raise MLDonkeyException(str(e))
+            raise
 
     def __enter__(self):
+        self.clean_searches()
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
@@ -48,8 +49,9 @@ class MLDonkey:
         return out
 
     def quit(self):
-        self.session.write('quit')
-        self.session.close()
+        if hasattr(self, 'session'):
+            self.session.write('quit')
+            self.session.close()
 
     def add_link(self, link):
         """

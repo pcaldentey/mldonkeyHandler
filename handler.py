@@ -2,8 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import os
-import sys
-from mldonkey import MLDonkey
+from mldonkey import MLDonkey, MLDonkeyException, MLDonkeyError
 from ConfigParser import ConfigParser
 
 
@@ -19,28 +18,25 @@ def main():
     ml_port = config.get('conf', 'ml_PORT').strip()
     ml_user = config.get('conf', 'ml_USER').strip()
     ml_pass = config.get('conf', 'ml_PASS').strip()
-
     try:
-        donkey = MLDonkey(ml_ip, ml_port, ml_user, ml_pass)
-        # donkey.clean_searches()
-    except Exception as e:
-        print("Connection error with ip:{} port:{} !!!".format(ml_ip, ml_port))
-        print("Unexpected error: {}".format(sys.exc_info()[0]))
-    else:
-        new_searchwords = ['cachurulo', 'lerele']
-        donkey.run_search(new_searchwords)
-        searches = donkey.get_searches()
-        for search in searches:
-            print(search)
-            res = donkey.download_search(int(search[0]))
-            if not res:
-                print("\t\"{}\" downloaded".format(search[1]))
-            else:
-                print("Empty search {} {}".format(search[1], res))
+        with MLDonkey(ml_ip, ml_port, ml_user, ml_pass) as donkey:
+            donkey.clean_searches()
+            new_searchwords = ['cachurulo', 'lerele']
+            donkey.run_search(new_searchwords)
+            searches = donkey.get_searches()
+            for search in searches:
+                print(search)
+                res = donkey.download_search(int(search[0]))
+                if not res:
+                    print("\t\"{}\" downloaded".format(search[1]))
+                else:
+                    print("Empty search {} {}".format(search[1], res))
 
-        donkey.clean_searches()
+    except MLDonkeyException as e:
+        print(e)
 
-    return
+    except MLDonkeyError as e:
+        print(e)
 
 
 if __name__ == '__main__':

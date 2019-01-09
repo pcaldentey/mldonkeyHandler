@@ -1,6 +1,5 @@
 import sys
 import re
-import time
 import urllib
 from telnetlib import Telnet
 
@@ -57,15 +56,8 @@ class MLDonkey:
         """
         Add a ed2k link to mldonkey server
         """
-#        command = "printf \"auth %s %s \\n dllink %s \\n q \\n\" | nc -i1 %s %s" % (self.user,
-#                                                                                    self.passw,
-#                                                                                    urllib.unquote(link),
-#                                                                                    self.ip,
-#                                                                                    self.port)
-#        output = commands.getstatusoutput(command)
-        output = self._run_command(" dllink {} \n".format(urllib.unquote(link)))
+        output = self._run_command("dllink {} \n".format(urllib.unquote(link)))
 
-        print(output)
         if 'Added link' in output:
             return "Link added"
         elif 'File is already shared in incoming/files' in output:
@@ -96,11 +88,10 @@ class MLDonkey:
 
     def run_search(self, links):
         """
-        Add a ed2k link to mldonkey server
+        Search for a strings in mldonkey server
         """
         for s in links:
             self._run_command(" s \"{}\" \n".format(s))
-            time.sleep(32)
 
     def download_search(self, search_index):
         """

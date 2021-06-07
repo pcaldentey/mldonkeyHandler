@@ -1,9 +1,9 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
+import configparser
 import os
 from mldonkey import MLDonkey, MLDonkeyException, MLDonkeyError
-from ConfigParser import ConfigParser
 
 
 def main():
@@ -11,7 +11,7 @@ def main():
     configfile = actual_dir + '/donkeylinkscrawler.ini'
 
     # Get configuration
-    config = ConfigParser()
+    config = configparser.ConfigParser()
     config.read([configfile])
 
     ml_ip = config.get('conf', 'ml_IP').strip()

@@ -13,13 +13,14 @@ class MLDonkeyError(Exception):
 
 
 class MLDonkey:
-    "Inteface to Mldonkey server"
+    "Mldonkey server interface"
 
     def __init__(self, mlIp, mlPort, mlUser, mlPass):
         self.ip = mlIp
         self.port = mlPort
         self.user = mlUser
         self.passw = mlPass
+
         try:
             self._start_session()
         except Exception as e:
@@ -36,12 +37,14 @@ class MLDonkey:
 
     def _start_session(self):
         self.session = Telnet(self.ip, self.port, 2)
-        self.session.read_until("MLdonkey command-line", 2)
+        self.session.read_until(bytearray("MLdonkey command-line", 'utf-8'), 2)
         self._run_command("auth {} {} \n".format(self.user, self.passw))
 
     def _run_command(self, command):
-        self.session.write(command)
-        out = self.session.read_until("MLdonkey command-line")
+        self.session.write(bytearray(command, 'utf-8'))
+        out = self.session.read_until(bytearray("MLdonkey command-line",
+                                                'utf-8'))
+        out = out.decode("utf-8")
         if "Command not authorized" in out or "No such command" in out \
            or "Bad login/password" in out:
             raise MLDonkeyException("MLDonkeyException: {}".format(out))
@@ -49,7 +52,7 @@ class MLDonkey:
 
     def quit(self):
         if hasattr(self, 'session'):
-            self.session.write('quit')
+            self.session.write(bytearray('quit', 'utf-8'))
             self.session.close()
 
     def add_link(self, link):
@@ -68,9 +71,11 @@ class MLDonkey:
             return output
 
     def get_searches(self):
-        self.session.write("vs \n")
+        self.session.write(bytearray("vs \n", 'utf-8'))
         try:
-            page = self.session.read_until("MLdonkey command-line", 1)
+            page = self.session.read_until(bytearray("MLdonkey command-line",
+                                                     'utf-8'),
+                                           1).decode("utf-8")
             # [27   ]CONTAINS[Desperate.housewives.8x04.School.of.hard.knocks.HDTV.Xvid.V.O.Subtitulos.Integrados.avi]
             # -2 (found 1)
             page = page.replace("\r", '')
